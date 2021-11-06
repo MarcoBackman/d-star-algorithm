@@ -6,8 +6,10 @@ class Vertex:
         self.is_obstacle = (v_type == 'X')
 
     # adds edge from self to vertice
-    def add_edge(self, vertice):
-        self.adjacent.append(vertice)
+    def add_edge(self, vertex):
+        self.adjacent.append(vertex)
+        if len(self.adjacent) == 4:
+            self.reorder_adj()
 
     # gets adjacent from index
     def get_adjacent(self, index):
@@ -35,16 +37,12 @@ class Graph:
                 self.root = row[0]
             self.find_r_or_g(grid[y][0], row[0])
             self.connect_vertices(prev_row[0], row[0])  # adds row up and prevrow down
-            if prev_row[0] is not None:
-                prev_row[0].reorder_adj()
             row[0].add_edge(None)  # adds left at start of row
             for x in range(1, len(grid[0])):
                 row.append(Vertex(grid[y][x]))
                 self.find_r_or_g(grid[y][x], row[x])
                 self.connect_vertices(prev_row[x], row[x])  # connects current vertex with vertex above it
                 # reorder previous row (does not include initial none row)
-                if y > 0:
-                    prev_row[x].reorder_adj()
                 self.connect_vertices(row[x-1], row[x])  # connects current vertex with previous vertex on left
             row[-1].add_edge(None)  # adds right to end of list
             prev_row = row[:]
@@ -53,30 +51,29 @@ class Graph:
         # adds none to 'down' and reorders adjacent list
         for x in range(len(prev_row)):
             prev_row[x].add_edge(None)
-            prev_row[x].reorder_adj()
 
 
-    def connect_vertices(self, vertice1, vertice2):
-        # vertice1 on left/above vertice2 on right/below
-        if vertice1 is not None:
-            vertice1.add_edge(vertice2)
-        if vertice2 is not None:
-            vertice2.add_edge(vertice1)
+    def connect_vertices(self, vertex1, vertex2):
+        # vertex1 on left/above vertice2 on right/below
+        if vertex1 is not None:
+            vertex1.add_edge(vertex2)
+        if vertex2 is not None:
+            vertex2.add_edge(vertex1)
 
-    def find_r_or_g(self, c, vertice):
+    def find_r_or_g(self, c, vertex):
         if c == 'G':
-            self.start = vertice
+            self.start = vertex
         elif c == 'R':
-            self.goal = vertice
+            self.goal = vertex
 
     def __str__(self):
         msg = "Grid\n"
-        y_vertice = self.root
-        while y_vertice is not None:
-            x_vertice = y_vertice
-            while x_vertice is not None:
-                msg += f"{x_vertice.v_type}"
-                x_vertice = x_vertice.get_adjacent(3)
+        y_vertex = self.root
+        while y_vertex is not None:
+            x_vertex = y_vertex
+            while x_vertex is not None:
+                msg += f"{x_vertex.v_type}"
+                x_vertex = x_vertex.get_adjacent(3)
             msg += '\n'
-            y_vertice = y_vertice.get_adjacent(2)
+            y_vertex = y_vertex.get_adjacent(2)
         return msg
