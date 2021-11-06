@@ -60,9 +60,9 @@ class Graph:
             vertex2.add_adj(vertex1)
 
     def find_r_or_g(self, c, vertex):
-        if c == 'G':
+        if c == 'R':
             self.start = vertex
-        elif c == 'R':
+        elif c == 'G':
             self.goal = vertex
 
     def __str__(self):
