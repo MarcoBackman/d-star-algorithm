@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+
+
 class Vertex:
     def __init__(self, v_type):
         self.v_type = v_type
@@ -21,6 +24,8 @@ class Vertex:
 
 
 class Graph:
+    save_graph_num = 1
+    
     def __init__(self):
         self.start = None
         self.goal = None
@@ -76,3 +81,26 @@ class Graph:
             msg += '\n'
             y_vertex = y_vertex.get_adj(2)
         return msg
+
+    def save_graph(self):
+        num_grid = []
+        y_vertex = self.root
+        while y_vertex is not None:
+            num_row = []
+            x_vertex = y_vertex
+            while x_vertex is not None:
+                if x_vertex.v_type == 'X':
+                    num_row.append(-2)
+                elif x_vertex.v_type == ' ':
+                    num_row.append(3)
+                elif x_vertex.v_type == 'R':
+                    num_row.append(1)
+                elif x_vertex.v_type == 'G':
+                    num_row.append(0)
+                x_vertex = x_vertex.get_adj(3)
+            num_grid.append(num_row)
+            y_vertex = y_vertex.get_adj(2)
+        plt.imshow(num_grid, cmap="hot", interpolation="nearest")
+        plt.savefig(f"out{Graph.save_graph_num}.png")
+        Graph.save_graph_num += 1
+        
