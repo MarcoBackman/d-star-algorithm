@@ -2,6 +2,7 @@ import pygame
 from grid import GridWorld
 from utils import stateNameToCoords
 from d_star_lite import initDStarLite, moveAndRescan
+import random
 
 # Define some colors
 BLACK = (0, 0, 0)
@@ -11,6 +12,9 @@ RED = (255, 0, 0)
 GRAY1 = (145, 145, 102)
 GRAY2 = (77, 77, 51)
 BLUE = (0, 0, 80)
+
+
+# random.seed(100)
 
 colors = {
     0: WHITE,
@@ -64,8 +68,10 @@ clock = pygame.time.Clock()
 
 if __name__ == "__main__":
     graph = GridWorld(X_DIM, Y_DIM)
-    s_start = 'x1y2' # [1, 2]
-    s_goal = 'x5y4'  # [5, 4]
+    # s_start = 'x1y2' # [1, 2]
+    s_start = f'x{random.randint(0, X_DIM)}y{random.randint(0, Y_DIM)}'
+    # s_goal = 'x5y4'  # [5, 4]
+    s_goal = f'x{random.randint(0, X_DIM)}y{random.randint(0, Y_DIM)}'
     goal_coords = stateNameToCoords(s_goal)
 
     graph.setStart(s_start)
