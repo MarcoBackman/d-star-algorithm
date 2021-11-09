@@ -28,7 +28,7 @@ WIDTH = 40
 HEIGHT = 40
 
 # This sets the margin between each cell
-MARGIN = 5
+MARGIN = 1
 
 # Create a 2 dimensional array. A two dimensional
 # array is simply a list of lists.
@@ -49,7 +49,7 @@ pygame.init()
 
 X_DIM = 32
 Y_DIM = 32
-VIEWING_RANGE = 2
+VIEWING_RANGE = 5 # affect the ability of the algorithm to find it's path
 
 
 # Set the HEIGHT and WIDTH of the screen
