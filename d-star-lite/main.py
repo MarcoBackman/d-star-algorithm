@@ -49,7 +49,7 @@ pygame.init()
 
 X_DIM = 32
 Y_DIM = 32
-VIEWING_RANGE = 5 # affect the ability of the algorithm to find it's path
+VIEWING_RANGE = 6 # affect the ability of the algorithm to find it's path
 
 
 # Set the HEIGHT and WIDTH of the screen
