@@ -24,25 +24,25 @@ colors = {
 }
 
 # This sets the WIDTH and HEIGHT of each grid location
-WIDTH = 40
-HEIGHT = 40
+WIDTH = 25
+HEIGHT = 25
 
 # This sets the margin between each cell
 MARGIN = 1
 
 # Create a 2 dimensional array. A two dimensional
 # array is simply a list of lists.
-grid = []
-for row in range(10):
-    # Add an empty array that will hold each cell
-    # in this row
-    grid.append([])
-    for column in range(10):
-        grid[row].append(0)  # Append a cell
+# grid = []
+# for row in range(10):
+#     # Add an empty array that will hold each cell
+#     # in this row
+#     grid.append([])
+#     for column in range(10):
+#         grid[row].append(0)  # Append a cell
 
-# Set row 1, cell 5 to one. (Remember rows and
-# column numbers start at zero.)
-grid[1][5] = 1
+# # Set row 1, cell 5 to one. (Remember rows and
+# # column numbers start at zero.)
+# grid[1][5] = 1
 
 # Initialize pygame
 pygame.init()
@@ -67,11 +67,18 @@ done = False
 clock = pygame.time.Clock()
 
 if __name__ == "__main__":
+
+    # generate graph for the grid world
     graph = GridWorld(X_DIM, Y_DIM)
     # s_start = 'x1y2' # [1, 2]
+
+    # generate starting point
     s_start = f'x{random.randint(0, X_DIM)}y{random.randint(0, Y_DIM)}'
     # s_goal = 'x5y4'  # [5, 4]
+
+    # generate ending point
     s_goal = f'x{random.randint(0, X_DIM)}y{random.randint(0, Y_DIM)}'
+
     goal_coords = stateNameToCoords(s_goal)
 
     graph.setStart(s_start)
@@ -85,7 +92,15 @@ if __name__ == "__main__":
     s_current = s_start
     pos_coords = stateNameToCoords(s_current)
 
-    basicfont = pygame.font.SysFont('Comic Sans MS', 36)
+    # draw start in blue
+    pygame.draw.rect(
+        screen, 
+        GRAY2, 
+        [(MARGIN + WIDTH) * pos_coords[0] + MARGIN,
+        (MARGIN + HEIGHT) * pos_coords[1] + MARGIN, WIDTH, HEIGHT]
+    )
+
+    basicfont = pygame.font.SysFont('Comic Sans MS', 15)
 
     # -------- Main Program Loop -----------
     while not done:
@@ -94,13 +109,17 @@ if __name__ == "__main__":
                 done = True  # Flag that we are done so we exit this loop
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 print('space bar! call next action')
-                s_new, k_m = moveAndRescan(
-                    graph, queue, s_current, VIEWING_RANGE, k_m)
+
+                # move the agent with new position to go to and new k_m | actual d-star lite pathfinding
+                s_new, k_m = moveAndRescan(graph, queue, s_current, VIEWING_RANGE, k_m)  
+
+
                 if s_new == 'goal':
                     print('Goal Reached!')
                     done = True
                 else:
-                    # print('setting s_current to ', s_new)
+                    print('setting s_current to ', s_new)
+                    # if the goal is not reached, updated current to new
                     s_current = s_new
                     pos_coords = stateNameToCoords(s_current)
                     # print('got pos coords: ', pos_coords)
@@ -112,47 +131,65 @@ if __name__ == "__main__":
                 column = pos[0] // (WIDTH + MARGIN)
                 row = pos[1] // (HEIGHT + MARGIN)
                 # Set that location to one
+                # draw an obstacle onto the grid
                 if(graph.cells[row][column] == 0):
                     graph.cells[row][column] = -1
 
         # Set the screen background
         screen.fill(BLACK)
-
+        ''' updating the grid graphically '''
         # Draw the grid
         for row in range(Y_DIM):
             for column in range(X_DIM):
                 color = WHITE
                 # if grid[row][column] == 1:
                 #     color = GREEN
-                pygame.draw.rect(screen, colors[graph.cells[row][column]],
-                                 [(MARGIN + WIDTH) * column + MARGIN,
-                                  (MARGIN + HEIGHT) * row + MARGIN, WIDTH, HEIGHT])
+                pygame.draw.rect(
+                    screen, 
+                    colors[graph.cells[row][column]],
+                    [(MARGIN + WIDTH) * column + MARGIN,
+                    (MARGIN + HEIGHT) * row + MARGIN, WIDTH, HEIGHT]
+                )
+
                 node_name = 'x' + str(column) + 'y' + str(row)
+
                 if(graph.graph[node_name].g != float('inf')):
                     # text = basicfont.render(
                     # str(graph.graph[node_name].g), True, (0, 0, 200), (255,
                     # 255, 255))
-                    text = basicfont.render(
-                        str(graph.graph[node_name].g), True, (0, 0, 200))
+                    text = basicfont.render(str(graph.graph[node_name].g), True, (0, 0, 200))
                     textrect = text.get_rect()
-                    textrect.centerx = int(
-                        column * (WIDTH + MARGIN) + WIDTH / 2) + MARGIN
-                    textrect.centery = int(
-                        row * (HEIGHT + MARGIN) + HEIGHT / 2) + MARGIN
+                    textrect.centerx = int(column * (WIDTH + MARGIN) + WIDTH / 2) + MARGIN
+                    textrect.centery = int(row * (HEIGHT + MARGIN) + HEIGHT / 2) + MARGIN
                     screen.blit(text, textrect)
 
         # fill in goal cell with GREEN
-        pygame.draw.rect(screen, GREEN, [(MARGIN + WIDTH) * goal_coords[0] + MARGIN,
-                                         (MARGIN + HEIGHT) * goal_coords[1] + MARGIN, WIDTH, HEIGHT])
+        pygame.draw.rect(
+            screen, 
+            GREEN, 
+            [(MARGIN + WIDTH) * goal_coords[0] + MARGIN,
+            (MARGIN + HEIGHT) * goal_coords[1] + MARGIN, WIDTH, HEIGHT]
+        )
         # print('drawing robot pos_coords: ', pos_coords)
         # draw moving robot, based on pos_coords
-        robot_center = [int(pos_coords[0] * (WIDTH + MARGIN) + WIDTH / 2) +
-                        MARGIN, int(pos_coords[1] * (HEIGHT + MARGIN) + HEIGHT / 2) + MARGIN]
+        robot_center = [
+            int(pos_coords[0] * (WIDTH + MARGIN) + WIDTH / 2) + MARGIN, 
+            int(pos_coords[1] * (HEIGHT + MARGIN) + HEIGHT / 2) + MARGIN
+        ]
         pygame.draw.circle(screen, RED, robot_center, int(WIDTH / 2) - 2)
 
         # draw robot viewing range
         pygame.draw.rect(
-            screen, BLUE, [robot_center[0] - VIEWING_RANGE * (WIDTH + MARGIN), robot_center[1] - VIEWING_RANGE * (HEIGHT + MARGIN), 2 * VIEWING_RANGE * (WIDTH + MARGIN), 2 * VIEWING_RANGE * (HEIGHT + MARGIN)], 2)
+            screen, 
+            BLUE, 
+            [
+                robot_center[0] - VIEWING_RANGE * (WIDTH + MARGIN), 
+                robot_center[1] - VIEWING_RANGE * (HEIGHT + MARGIN), 
+                2 * VIEWING_RANGE * (WIDTH + MARGIN), 
+                2 * VIEWING_RANGE * (HEIGHT + MARGIN)
+            ], 
+            2
+        )
 
         # Limit to 60 frames per second
         clock.tick(20)

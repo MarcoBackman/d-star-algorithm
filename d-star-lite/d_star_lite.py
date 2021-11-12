@@ -20,9 +20,7 @@ def heuristic_from_s(graph, id, s):
 
 def calculateKey(graph, id, s_current, k_m):
     return (
-        min(graph.graph[id].g, graph.graph[id].rhs) + 
-            heuristic_from_s(graph, id, s_current) + 
-            k_m, 
+        min(graph.graph[id].g, graph.graph[id].rhs) + heuristic_from_s(graph, id, s_current) + k_m, 
         min(graph.graph[id].g, graph.graph[id].rhs)
     )
 
@@ -151,8 +149,10 @@ def moveAndRescan(graph, queue, s_current, scan_range, k_m):
 
 def initDStarLite(graph, queue, s_start, s_goal, k_m):
     graph.graph[s_goal].rhs = 0
-    heapq.heappush(queue, calculateKey(
-        graph, s_goal, s_start, k_m) + (s_goal,))
+    heapq.heappush(
+        queue, 
+        calculateKey(graph, s_goal, s_start, k_m) + (s_goal,)
+    )
     computeShortestPath(graph, queue, s_start, k_m)
 
     return (graph, queue, k_m)

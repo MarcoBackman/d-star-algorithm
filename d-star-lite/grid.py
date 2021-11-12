@@ -114,4 +114,6 @@ class GridWorld(Graph):
                 if j + 1 < self.x_dim:  # not right col
                     node.parents['x' + str(i) + 'y' + str(j + 1)] = edge
                     node.children['x' + str(i) + 'y' + str(j + 1)] = edge
+
+                # store that node in the graph
                 self.graph['x' + str(i) + 'y' + str(j)] = node
